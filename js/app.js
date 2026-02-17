@@ -26,6 +26,7 @@ const App = (() => {
   const pageIndicator = document.getElementById('page-indicator');
   const toastContainer = document.getElementById('toast-container');
   const btnDarkmode = document.getElementById('btn-darkmode');
+  const btnFeuille = document.getElementById('btn-feuille');
 
   // --- Dark Mode ---
   function initDarkMode() {
@@ -100,7 +101,35 @@ const App = (() => {
     updatePageNav();
   }
 
+  // --- Quick load PDF from URL ---
+  async function loadPdfFromUrl(url) {
+    try {
+      showToast('Chargement en cours...', 'info');
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Fichier introuvable');
+      const arrayBuffer = await response.arrayBuffer();
+      await PdfRenderer.loadPdf(arrayBuffer);
+
+      dropZone.hidden = true;
+      mainContent.hidden = false;
+      btnText.disabled = false;
+      btnSignature.disabled = false;
+      btnExport.disabled = false;
+
+      updatePageNav();
+      showToast('PDF charge avec succes', 'success');
+    } catch (err) {
+      console.error('Error loading PDF from URL:', err);
+      showToast('Erreur lors du chargement du PDF', 'error');
+    }
+  }
+
   // --- Event wiring ---
+
+  // Quick feuille button
+  btnFeuille.addEventListener('click', () => {
+    loadPdfFromUrl('feuilles/FeuilleMat%C3%A9riel.pdf');
+  });
 
   // Import button → trigger file input
   btnImport.addEventListener('click', () => fileInput.click());
@@ -159,9 +188,66 @@ const App = (() => {
     Signature.open();
   });
 
-  // Export button
-  btnExport.addEventListener('click', () => {
-    Exporter.exportPdf();
+  // Export button — toggle menu
+  const exportMenu = document.getElementById('export-menu');
+  const filenameModal = document.getElementById('filename-modal');
+  const filenameInput = document.getElementById('filename-input');
+  const filenameBackdrop = document.getElementById('filename-backdrop');
+  const filenameCancel = document.getElementById('filename-cancel');
+  const filenameConfirm = document.getElementById('filename-confirm');
+  let pendingExportAction = null; // { action: 'download' } or { action: 'save', year: '2025' }
+
+  btnExport.addEventListener('click', (e) => {
+    e.stopPropagation();
+    exportMenu.hidden = !exportMenu.hidden;
+  });
+
+  exportMenu.addEventListener('click', (e) => {
+    const item = e.target.closest('.export-menu__item');
+    if (!item) return;
+    exportMenu.hidden = true;
+
+    const action = item.dataset.action;
+    pendingExportAction = { action };
+    if (action === 'save') pendingExportAction.year = item.dataset.year;
+
+    // Open filename modal
+    filenameInput.value = 'Signadji-export';
+    filenameModal.hidden = false;
+    filenameInput.focus();
+    filenameInput.select();
+  });
+
+  function closeFilenameModal() {
+    filenameModal.hidden = true;
+    pendingExportAction = null;
+  }
+
+  function confirmFilename() {
+    const name = filenameInput.value.trim();
+    if (!name) return;
+    const filename = name.endsWith('.pdf') ? name : name + '.pdf';
+    filenameModal.hidden = true;
+
+    if (pendingExportAction.action === 'download') {
+      Exporter.exportAndDownload(filename);
+    } else if (pendingExportAction.action === 'save') {
+      Exporter.exportAndSave(pendingExportAction.year, filename);
+    }
+    pendingExportAction = null;
+  }
+
+  filenameConfirm.addEventListener('click', confirmFilename);
+  filenameCancel.addEventListener('click', closeFilenameModal);
+  filenameBackdrop.addEventListener('click', closeFilenameModal);
+  filenameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') confirmFilename();
+    if (e.key === 'Escape') closeFilenameModal();
+  });
+
+  // Close export menu when clicking elsewhere
+  document.addEventListener('click', () => {
+    exportMenu.hidden = true;
   });
 
   // Listen for page changes

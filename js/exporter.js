@@ -96,11 +96,40 @@ const Exporter = (() => {
       }
 
       const savedBytes = await pdfDoc.save();
-      downloadPdf(savedBytes);
-      App.showToast('PDF exporte avec succes !', 'success');
+      return savedBytes;
     } catch (err) {
       console.error('Export error:', err);
       App.showToast('Erreur : ' + err.message, 'error');
+      return null;
+    }
+  }
+
+  async function exportAndDownload(filename) {
+    App.showToast('Export en cours...', 'info');
+    const bytes = await exportPdf();
+    if (bytes) {
+      downloadPdf(bytes, filename || 'Signadji-export.pdf');
+      App.showToast('PDF exporte avec succes !', 'success');
+    }
+  }
+
+  async function exportAndSave(year, filename) {
+    App.showToast('Export en cours...', 'info');
+    const bytes = await exportPdf();
+    if (!bytes) return;
+
+    try {
+      const url = '/api/save/' + encodeURIComponent(year) + '/' + encodeURIComponent(filename);
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/pdf' },
+        body: bytes,
+      });
+      if (!res.ok) throw new Error('Erreur serveur');
+      App.showToast('PDF enregistre dans le dossier ' + year + ' !', 'success');
+    } catch (err) {
+      console.error('Save error:', err);
+      App.showToast('Erreur lors de l\'enregistrement : ' + err.message, 'error');
     }
   }
 
@@ -158,17 +187,17 @@ const Exporter = (() => {
     return bytes;
   }
 
-  function downloadPdf(bytes) {
+  function downloadPdf(bytes, filename) {
     const blob = new Blob([bytes], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'SignIT-export.pdf';
+    a.download = filename || 'Signadji-export.pdf';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
 
-  return { exportPdf };
+  return { exportPdf, exportAndDownload, exportAndSave };
 })();

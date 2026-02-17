@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SignIT - Editeur & Signature PDF</title>
+  <title>Signadji - Editeur & Signature PDF</title>
+  <link rel="icon" type="image/png" href="images/logo.png">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,12 +29,8 @@
   <header class="top-bar glass-panel">
     <div class="top-bar__left">
       <span class="logo">
-        <svg class="logo__icon" width="28" height="28" viewBox="0 0 28 28" fill="none">
-          <rect x="2" y="4" width="18" height="22" rx="3" stroke="#ff6fa3" stroke-width="2" fill="none"/>
-          <path d="M8 14 C10 10, 14 10, 14 14 C14 18, 18 18, 20 14" stroke="#5cb8ff" stroke-width="2" fill="none" stroke-linecap="round"/>
-          <line x1="8" y1="20" x2="16" y2="20" stroke="#ff6fa3" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        <span class="logo__text">SignIT</span>
+        <img class="logo__icon" src="images/logo.png" alt="Signadji" width="28" height="28">
+        <span class="logo__text">Signadji</span>
       </span>
     </div>
     <div class="top-bar__actions">
@@ -48,6 +45,19 @@
         <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
         </svg>
+      </button>
+      <a href="explorer.html" class="btn btn--glass" title="Explorateur de fichiers" style="text-decoration:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+        </svg>
+        <span class="btn__label">Explorer</span>
+      </a>
+      <button id="btn-feuille" class="btn btn--glass" title="Ouvrir Feuille Matériel">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        <span class="btn__label">Feuille</span>
       </button>
       <button id="btn-import" class="btn btn--glass" title="Importer un PDF">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -72,14 +82,46 @@
         </svg>
         <span class="btn__label">Signature</span>
       </button>
-      <button id="btn-export" class="btn btn--primary" disabled title="Exporter le PDF">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-          <polyline points="7 10 12 15 17 10"/>
-          <line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-        <span class="btn__label">Exporter</span>
-      </button>
+      <div class="export-wrapper">
+        <button id="btn-export" class="btn btn--primary" disabled title="Exporter le PDF">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span class="btn__label">Exporter</span>
+        </button>
+        <div id="export-menu" class="export-menu glass-panel" hidden>
+          <button class="export-menu__item" data-action="download">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Télécharger
+          </button>
+          <hr class="export-menu__divider">
+          <span class="export-menu__label">Enregistrer sur le réseau</span>
+          <button class="export-menu__item" data-action="save" data-year="2024">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+            </svg>
+            Dossier 2024
+          </button>
+          <button class="export-menu__item" data-action="save" data-year="2025">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+            </svg>
+            Dossier 2025
+          </button>
+          <button class="export-menu__item" data-action="save" data-year="2026">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+            </svg>
+            Dossier 2026
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -177,6 +219,22 @@
         <button id="sig-undo" class="btn btn--glass">Annuler trait</button>
         <button id="sig-cancel" class="btn btn--glass">Annuler</button>
         <button id="sig-confirm" class="btn btn--primary">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FILENAME MODAL ===== -->
+  <div id="filename-modal" class="modal" hidden>
+    <div class="modal__backdrop" id="filename-backdrop"></div>
+    <div class="modal__content glass-panel" style="max-width:420px;">
+      <h2 class="modal__title">Nom du fichier</h2>
+      <div class="filename-input-wrapper">
+        <input type="text" id="filename-input" class="explorer__search" placeholder="Nom du fichier" value="Signadji-export">
+        <span class="filename-ext">.pdf</span>
+      </div>
+      <div class="modal__actions">
+        <button id="filename-cancel" class="btn btn--glass">Annuler</button>
+        <button id="filename-confirm" class="btn btn--primary">Confirmer</button>
       </div>
     </div>
   </div>
