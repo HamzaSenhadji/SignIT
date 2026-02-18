@@ -71,11 +71,8 @@ const App = (() => {
       const arrayBuffer = await file.arrayBuffer();
       await PdfRenderer.loadPdf(arrayBuffer);
 
-      // Show main content, hide drop zone
       dropZone.hidden = true;
       mainContent.hidden = false;
-
-      // Enable buttons
       btnText.disabled = false;
       btnSignature.disabled = false;
       btnExport.disabled = false;
@@ -126,7 +123,7 @@ const App = (() => {
 
   // --- Event wiring ---
 
-  // Quick feuille button
+  // Quick feuille button — load PDF
   btnFeuille.addEventListener('click', () => {
     loadPdfFromUrl('feuilles/FeuilleMat%C3%A9riel.pdf');
   });

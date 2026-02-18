@@ -32,7 +32,7 @@
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-  --bg-gradient: linear-gradient(135deg, #ffd6e0 0%, #d4e7ff 50%, #e8d5f5 100%);
+  --bg-gradient: linear-gradient(135deg, #ffd6e0 0%, #d4e7ff 25%, #e8d5f5 50%, #d4ffe6 75%, #ffd6e0 100%);
   --page-bg: white;
   --modal-backdrop: rgba(0, 0, 0, 0.3);
 }
@@ -48,7 +48,7 @@
   --glass-border: rgba(100, 116, 139, 0.3);
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 
-  --bg-gradient: linear-gradient(135deg, #1a1025 0%, #0f172a 50%, #0c1524 100%);
+  --bg-gradient: linear-gradient(135deg, #1a1025 0%, #0f172a 25%, #0c1524 50%, #0d1f1a 75%, #1a1025 100%);
   --page-bg: #1e293b;
   --modal-backdrop: rgba(0, 0, 0, 0.6);
 }
@@ -70,9 +70,19 @@ body {
   color: var(--color-text);
   min-height: 100vh;
   background: var(--bg-gradient);
+  background-size: 300% 300%;
   background-attachment: fixed;
   overflow-x: hidden;
-  transition: background 0.4s ease, color 0.3s ease;
+  transition: color 0.3s ease;
+  animation: gradientShift 20s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 50% 0%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 100%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* --- Glass Panel --- */
@@ -200,6 +210,12 @@ body {
   gap: var(--spacing-sm);
   font-weight: 700;
   font-size: 20px;
+}
+
+.logo__banner {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
 }
 
 .logo__text {
@@ -716,6 +732,7 @@ body {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
 
 /* ============================================
    Explorer Page

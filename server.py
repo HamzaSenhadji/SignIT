@@ -6,6 +6,8 @@ Usage: python server.py
 import http.server
 import json
 import os
+import socketserver
+import threading
 import urllib.parse
 from pathlib import Path
 
@@ -126,8 +128,12 @@ class SigandjiHandler(http.server.SimpleHTTPRequestHandler):
             super().log_message(format, *args)
 
 
+class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+    daemon_threads = True
+
+
 if __name__ == "__main__":
-    with http.server.HTTPServer(("", PORT), SigandjiHandler) as httpd:
+    with ThreadedHTTPServer(("", PORT), SigandjiHandler) as httpd:
         print(f"Signadji server running on http://localhost:{PORT}")
         print(f"PDF source: {PDF_ROOT}")
         httpd.serve_forever()
