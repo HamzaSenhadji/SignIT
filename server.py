@@ -12,7 +12,7 @@ import urllib.parse
 from pathlib import Path
 
 PORT = 8080
-PDF_ROOT = r"R:\DSI\_COMMUN\02_EXPLOITATION\20_AFFECTATION_MATERIEL\PDF"
+PDF_ROOT = os.environ.get("PDF_ROOT", "/mnt/pdfs")
 STATIC_DIR = os.path.dirname(os.path.abspath(__file__))
 YEARS = ["2024", "2025", "2026"]
 
