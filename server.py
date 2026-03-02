@@ -72,6 +72,13 @@ class SigandjiHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(301)
             self.send_header("Location", "/")
             self.end_headers()
+        elif path == "/explorer.html":
+            self.send_response(301)
+            self.send_header("Location", "/explorer")
+            self.end_headers()
+        elif path == "/explorer":
+            self.path = "/explorer.html"
+            super().do_GET()
         elif path == "/api/files":
             self.handle_list_files()
         elif path.startswith("/api/pdf/"):
