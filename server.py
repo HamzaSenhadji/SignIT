@@ -7,11 +7,15 @@ import http.server
 import json
 import os
 import socketserver
+import ssl
 import threading
 import urllib.parse
 from pathlib import Path
 
-PORT = 8080
+PORT     = 8080
+SSL_PORT = 8443
+CERT     = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cert.pem")
+KEY      = os.path.join(os.path.dirname(os.path.abspath(__file__)), "key.pem")
 PDF_ROOT = os.environ.get("PDF_ROOT", "/mnt/pdfs")
 STATIC_DIR = os.path.dirname(os.path.abspath(__file__))
 YEARS = ["2024", "2025", "2026"]
@@ -144,7 +148,17 @@ class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
 
 
 if __name__ == "__main__":
-    with ThreadedHTTPServer(("", PORT), SigandjiHandler) as httpd:
-        print(f"Signadji server running on http://localhost:{PORT}")
-        print(f"PDF source: {PDF_ROOT}")
-        httpd.serve_forever()
+    # Serveur HTTPS si cert/key présents, sinon HTTP
+    if os.path.exists(CERT) and os.path.exists(KEY):
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        ctx.load_cert_chain(CERT, KEY)
+        with ThreadedHTTPServer(("", SSL_PORT), SigandjiHandler) as httpd:
+            httpd.socket = ctx.wrap_socket(httpd.socket, server_side=True)
+            print(f"Signadji server running on https://localhost:{SSL_PORT}")
+            print(f"PDF source: {PDF_ROOT}")
+            httpd.serve_forever()
+    else:
+        with ThreadedHTTPServer(("", PORT), SigandjiHandler) as httpd:
+            print(f"Signadji server running on http://localhost:{PORT}")
+            print(f"PDF source: {PDF_ROOT}")
+            httpd.serve_forever()
